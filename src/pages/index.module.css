@@ -1,0 +1,218 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  min-height: 100vh;
+  margin-top: 60px;
+}
+
+.main_text {
+  font-size: 1.7rem;
+}
+
+.main_bullets {
+  font-size: 1.2rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  justify-content: start;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.row_center {
+  align-items: center;
+}
+
+.row_wrap {
+  flex-wrap: wrap;
+}
+
+.row_wrap button {
+  margin: 5px 2px;
+}
+
+.col_all_center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.col_cheat {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  margin: 0 10px;
+  background: var(--bg-color-light);
+  border-radius: 12px;
+}
+
+.col_hints {
+  height: calc(100vh - 60px);
+}
+
+.col_hints_container {
+}
+
+
+.col_cheat div {
+  padding: 0 10px;
+}
+
+.margin_10px {
+  margin: 10px;
+}
+
+.padding_10px {
+  padding: 10px
+}
+
+.header {
+  background: var(--text-color);
+  color: var(--bg-color);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+
+.all_margin_10_px > * {
+  margin-right: 10px
+}
+
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+}
+
+.tag {
+  color: var(--link-color);
+  padding: 0;
+  margin: 0;
+}
+
+.failed {
+  background: rgb(218, 30, 40);
+  color: #e6f1ff;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.draft {
+  background: #2DCCFF;
+  color: var(--bg-color);
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.in_progress {
+  background: #F1C21B;
+  color: #020c1b;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.completed {
+  background: #00f7a1;
+  color: #020c1b;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.task {
+  padding: 12px;
+  margin: 12px;
+  background: var(--bg-color-light);
+  border-radius: 12px;
+}
+
+.width_100 {
+  width: 100%;
+}
+
+.tasks_row {
+
+}
+
+.max_width_500_px {
+    max-width: 500px;
+}
+
+.snek {
+
+}
+
+.snek:hover {
+  background: unset !important;
+}
+
+@media only screen and (min-width: 2000px) {
+  .task {
+    width: 31% !important;
+  }
+}
+
+@media only screen and (max-width: 2000px) {
+  .task {
+    width: 31% !important;
+  }
+}
+
+@media only screen and (max-width: 1500px) {
+  .task {
+    width: 46% !important;
+  }
+}
+
+
+@media only screen and (max-width: 1000px) {
+  .task {
+    width: 100% !important;
+  }
+}
+
+
+@media only screen and (min-width: 800px) {
+  .col_hints {
+    position: sticky;
+    top: 60px;
+  }
+
+  .col_hints_container {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .task_row {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .col_hints {
+    height: 100%;
+  }
+
+  .col_cheat {
+    width: 100%;
+  }
+
+  .col {
+    width: 100%;
+  }
+
+}

@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// npx prisma migrate dev --name Difficulty
+// npx prisma generate
+// npx prisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Task {
+  id         Int      @id @default(autoincrement())
+  task       String
+  answer     String
+  comments   String
+  difficulty Int      @default(0)
+  status     String   @default("DRAFT")
+  completed  Boolean  @default(false)
+  attempts   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([task])
+}
+
+model Hint {
+  id        Int           @id @default(autoincrement())
+  hint      String
+  createdAt DateTime      @default(now())
+  bullets   Hint_Bullet[]
+
+  @@index([hint])
+}
+
+model Hint_Bullet {
+  id        Int      @id @default(autoincrement())
+  bullet    String
+  createdAt DateTime @default(now())
+  Hint      Hint     @relation(fields: [hintId], references: [id])
+  hintId    Int
+
+  @@index([bullet])
+}
