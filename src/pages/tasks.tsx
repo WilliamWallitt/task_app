@@ -1,5 +1,3 @@
-import TimeAgo from 'javascript-time-ago'
-import en from 'javascript-time-ago/locale/en'
 import styles from "./index.module.css";
 import React, {useEffect, useState} from "react";
 import {Hint as PrismaHint, Hint_Bullet, Task as PrismaTask} from "@prisma/client";
@@ -44,10 +42,7 @@ export enum View {
     FILE
 }
 
-TimeAgo.addLocale(en)
-
 export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: TasksProps) {
-    const timeAgo = new TimeAgo('en-US')
 
     const [tasks, setTasks] = useState<Task[]>(taskData)
     const [id, setId] = useState<number | undefined>(undefined)
@@ -168,13 +163,17 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
         // trpc.add.mutate(input)
         addTaskMutation.mutate(input, {
             onSuccess: (task) => {
-                task && setTasks((prevTasks) => [task as Task, ...prevTasks])
+                if (task) {
+                    setTasks((prevTasks) => [task as Task, ...prevTasks])
+                }
                 setInput("")
-                tasks && setStatus({
-                    task: task as Task,
-                    field: "task",
-                    action: "ADDED"
-                })
+                if (tasks) {
+                    setStatus({
+                        task: task as Task,
+                        field: "task",
+                        action: "ADDED"
+                    })
+                }
             }
         })
     };
@@ -183,16 +182,16 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
         // Trigger the mutation to add a new task
         const task = tasks.find(x => x.id === id)
         // task && trpc.update.mutate(task)
-        task && updateTaskMutation.mutate(task, {
+        if (task) {updateTaskMutation.mutate(task, {
             onSuccess: (task) => {
-                task && setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x));
-                tasks && setStatus({
+                if (task) { setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x)) }
+                if (tasks) { setStatus({
                     task: task as Task,
                     field: "task",
                     action: "UPDATED"
-                })
+                })}
             }
-        })
+        })}
     };
 
     const handleDeleteTask = (id: number) => {
@@ -200,12 +199,12 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
         // trpc.delete.mutate(id)
         deleteTaskMutation.mutate(id, {
             onSuccess: (task) => {
-                task && setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))
-                tasks && setStatus({
+                if (task) { setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))}
+                if (tasks) { setStatus({
                     task: task as Task,
                     field: "task",
                     action: "DELETED"
-                })
+                })}
             }
         })
     };
@@ -270,8 +269,8 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
                                             setSearchInput(input)
                                         }} type={Type.Text} placeholder={"Search"}/>
                                         <select onChange={(e) => setDropdown(e.target.value as keyof Task)}>
-                                            {tasks[0] && Object.keys(tasks[0]).map(x => (
-                                                <option selected={dropdown === x} id={x}
+                                            {tasks[0] && Object.keys(tasks[0]).map((x, i) => (
+                                                <option key={i} selected={dropdown === x} id={x}
                                                         value={x}>{x}</option>
                                             ))}
                                         </select>
@@ -291,7 +290,7 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
                             <div className={`${styles.row} ${styles.row_wrap}`}
                                  style={{justifyContent: "center"}}>
                                 {tasks && tasks.length > 0 ? (!showAll ? tasks.slice(0, 15) : tasks).map(x => (
-                                    <TaskContent setId={setId} x={x} tasks={tasks} setTasks={setTasks}
+                                    <TaskContent key={x.id} setId={setId} x={x} tasks={tasks} setTasks={setTasks}
                                                  handleDeleteTask={handleDeleteTask}
                                                  handleUpdateTask={handleUpdateTask}/>
                                 )) : <p>No tasks found.</p>}

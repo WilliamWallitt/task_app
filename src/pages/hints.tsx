@@ -28,7 +28,7 @@ export const Hints = ({hintData}: HintsProps) => {
         }}>
             <div className={`${styles.col_chesat} ${styles.col_hints_container}`}>
                 {hints.map(x => (
-                    <div className={styles.col}>
+                    <div key={x.id} className={styles.col}>
                         <div className={`${styles.row} ${styles.row_center}`}>
                             <p><strong>{x.hint}</strong></p>
                             {editHints &&
@@ -43,10 +43,10 @@ export const Hints = ({hintData}: HintsProps) => {
                             }
                         </div>
                         {x.bullets.map(b => (
-                            <div className={styles.col}>
+                            <div key={b.id} className={styles.col}>
                                 <Field disabled={true} value={b.bullet}
-                                       onUpdateHandler={() => {
-                                       }} type={Type.Code} placeholder={"Bullet"}/>
+                                       onUpdateHandler={() => null}
+                                       type={Type.Code} placeholder={"Bullet"}/>
                                 {editHints &&
                                     <button
                                         onClick={() => deleteHintBulletMutation.mutate(b.id, {

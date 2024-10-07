@@ -12,6 +12,7 @@ interface TaskProps {
     setId: (id: number) => void,
     setTasks: (task: T[]) => void,
     tasks: T[],
+    key: number,
     handleUpdateTask: (id: number) => void,
     handleDeleteTask: (id: number) => void,
 }
@@ -19,7 +20,7 @@ interface TaskProps {
 TimeAgo.addLocale(en)
 
 
-export const TaskContent = ({x, setId, setTasks, tasks, handleUpdateTask, handleDeleteTask}: TaskProps) => {
+export const TaskContent = ({key, x, setId, setTasks, tasks, handleUpdateTask, handleDeleteTask}: TaskProps) => {
     const isMountingRef = useRef(false);
     const timeAgo = new TimeAgo('en-US')
 
@@ -32,7 +33,7 @@ export const TaskContent = ({x, setId, setTasks, tasks, handleUpdateTask, handle
     }, [x.comments])
 
     return (
-        <div key={x.id} className={`${styles.col} ${styles.task}`}
+        <div key={key} className={`${styles.col} ${styles.task}`}
              id={x.id.toString()}
              onMouseEnter={() => setId(x.id)}>
             <div className={`${styles.row} ${styles.row_center} ${styles.all_margin_10_px}`}>

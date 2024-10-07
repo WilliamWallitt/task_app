@@ -13,14 +13,17 @@ export interface TasksBarChartProps {
 TimeAgo.addLocale(en)
 
 
+type payloadType = {payload: {id: number}}
+
 export const TasksBarChart = ({tasks, graphFilter}: TasksBarChartProps) => {
     const timeAgo = new TimeAgo('en-US')
-
     const CustomTooltip = (props: any) => {
         const {active, payload, label, contentStyle} = props
+        // this is to get round es-lint rules - for prod build
+        const p = payload as payloadType[]
 
-        if (active && payload && payload.length) {
-            const task = tasks.find(x => x.id === payload[0].payload.id)
+        if (active && p?.length) {
+            const task = tasks.find(x => x.id === p[0]?.payload.id)
             if (!task) {
                 return null
             }

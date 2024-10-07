@@ -20,14 +20,18 @@ interface FieldProps {
 }
 
 export const Field = ({value, onUpdateHandler, onChangeHandler, type, placeholder, inputLength, rows, clearInputOnUpdate, disabled, hide}: FieldProps) => {
-    const [input, setInput] = React.useState<string>(value || "")
+    const [input, setInput] = React.useState<string>(value ?? "")
 
     useEffect(() => {
-        value !== undefined && setInput(value)
+         if (value !== undefined) {
+             setInput(value)
+         }
     }, [value]);
 
     useEffect(() => {
-        clearInputOnUpdate && setInput("")
+        if (clearInputOnUpdate) {
+            setInput("")
+        }
     }, [onUpdateHandler]);
 
     const renderField = (type: Type): JSX.Element => {
@@ -37,13 +41,15 @@ export const Field = ({value, onUpdateHandler, onChangeHandler, type, placeholde
         switch (type) {
             case Type.Text:
                 return (
-                    <textarea rows={rows || 6}
+                    <textarea rows={rows ?? 6}
                               disabled={disabled}
-                              onBlur={() => input.length >= (inputLength !== undefined ? inputLength : 5) && onUpdateHandler(input)}
+                              onBlur={() => input.length >= (inputLength ?? 5) && onUpdateHandler(input)}
                               placeholder={placeholder} value={input}
                               onChange={(e) => {
                                   setInput(e.target.value)
-                                  onChangeHandler && onChangeHandler(e.target.value)
+                                  if (onChangeHandler) {
+                                      onChangeHandler(e.target.value)
+                                  }
                               }}/>
                 )
             case Type.Code:
@@ -60,10 +66,12 @@ export const Field = ({value, onUpdateHandler, onChangeHandler, type, placeholde
                             height: "fit-content",
                             minHeight: !disabled ? "120px" : "auto"
                         }}
-                        onBlur={() => input.length >= (inputLength !== undefined ? inputLength : 5) && onUpdateHandler(input)}
+                        onBlur={() => input.length >= (inputLength ?? 5) && onUpdateHandler(input)}
                         onValueChange={(code) => {
                             setInput(code)
-                            onChangeHandler && onChangeHandler(code)
+                            if (onChangeHandler) {
+                                onChangeHandler(code)
+                            }
                         }}
                         highlight={code => code}/>
                 );
