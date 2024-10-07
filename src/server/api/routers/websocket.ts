@@ -14,7 +14,7 @@ const t = initTRPC.create({
     transformer: superjson
 });
 
-const StatusEnum = z.enum(['DRAFT', 'IN_PROGRESS', 'COMPLETED', 'FAILED']);
+export const StatusEnum = z.enum(['DRAFT', 'IN_PROGRESS', 'COMPLETED', 'FAILED']);
 
 
 export const websocketRouter = t.router({

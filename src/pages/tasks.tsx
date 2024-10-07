@@ -12,6 +12,7 @@ import {TasksBarChart} from "~/pages/tasksBarChart";
 import {TaskContent} from "~/pages/task";
 import {TasksRadialChart} from "~/pages/tasksRadialChart";
 import Toggle from "react-toggle";
+import {api} from "~/utils/api";
 
 // Define allowed status values
 export const Status = {
@@ -70,56 +71,60 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
         }
     };
 
-    useEffect(() => {
-        const addSubscription = trpc.onAdd.subscribe(undefined,  {
-            onError: (err) => {
-                console.error('Subscription error:', err);
-            },
-            onData: (task) => {
-                task && setTasks((prevTasks) => [task as Task, ...prevTasks])
-                setInput("")
-                tasks && setStatus({
-                    task: task as Task,
-                    field: "task",
-                    action: "ADDED"
-                })
-            }
-        })
-        // Use tRPC subscription to listen for 'onAdd' events
-        const updateSubscription = trpc.onUpdate.subscribe(undefined, {
-            onError: (err) => {
-                console.error('Subscription error:', err);
-            },
-            onData: (task) => {
-                task && setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x));
-                tasks && setStatus({
-                    task: task as Task,
-                    field: "task",
-                    action: "UPDATED"
-                })
-            }
-        })
+    const addTaskMutation = api.task.add.useMutation()
+    const deleteTaskMutation = api.task.delete.useMutation()
+    const updateTaskMutation = api.task.update.useMutation()
 
-        const deleteSubscription = trpc.onDelete.subscribe(undefined, {
-            onError: (err) => {
-                console.error('Subscription error:', err);
-            },
-            onData: (task) => {
-                task && setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))
-                tasks && setStatus({
-                    task: task as Task,
-                    field: "task",
-                    action: "DELETED"
-                })
-            }
-        })
-
-        return () => {
-            addSubscription.unsubscribe()
-            updateSubscription.unsubscribe()
-            deleteSubscription.unsubscribe()
-        }
-    }, []);
+    // useEffect(() => {
+    //     const addSubscription = trpc.onAdd.subscribe(undefined,  {
+    //         onError: (err) => {
+    //             console.error('Subscription error:', err);
+    //         },
+    //         onData: (task) => {
+    //             task && setTasks((prevTasks) => [task as Task, ...prevTasks])
+    //             setInput("")
+    //             tasks && setStatus({
+    //                 task: task as Task,
+    //                 field: "task",
+    //                 action: "ADDED"
+    //             })
+    //         }
+    //     })
+    //     // Use tRPC subscription to listen for 'onAdd' events
+    //     const updateSubscription = trpc.onUpdate.subscribe(undefined, {
+    //         onError: (err) => {
+    //             console.error('Subscription error:', err);
+    //         },
+    //         onData: (task) => {
+    //             task && setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x));
+    //             tasks && setStatus({
+    //                 task: task as Task,
+    //                 field: "task",
+    //                 action: "UPDATED"
+    //             })
+    //         }
+    //     })
+    //
+    //     const deleteSubscription = trpc.onDelete.subscribe(undefined, {
+    //         onError: (err) => {
+    //             console.error('Subscription error:', err);
+    //         },
+    //         onData: (task) => {
+    //             task && setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))
+    //             tasks && setStatus({
+    //                 task: task as Task,
+    //                 field: "task",
+    //                 action: "DELETED"
+    //             })
+    //         }
+    //     })
+    //
+    //     return () => {
+    //         addSubscription.unsubscribe()
+    //         updateSubscription.unsubscribe()
+    //         deleteSubscription.unsubscribe()
+    //     }
+    // }, []);
 
     const func = (a: Task, b: Task): number => {
 
@@ -160,21 +165,50 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
 
     const handleAddTask = () => {
         // Trigger the mutation to add a new task
-        trpc.add.mutate(input)
+        // trpc.add.mutate(input)
+        addTaskMutation.mutate(input, {
+            onSuccess: (task) => {
+                task && setTasks((prevTasks) => [task as Task, ...prevTasks])
+                setInput("")
+                tasks && setStatus({
+                    task: task as Task,
+                    field: "task",
+                    action: "ADDED"
+                })
+            }
+        })
     };
 
     const handleUpdateTask = (id: number) => {
         // Trigger the mutation to add a new task
         const task = tasks.find(x => x.id === id)
-        task && trpc.update.mutate(task)
+        // task && trpc.update.mutate(task)
+        task && updateTaskMutation.mutate(task, {
+            onSuccess: (task) => {
+                task && setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x));
+                tasks && setStatus({
+                    task: task as Task,
+                    field: "task",
+                    action: "UPDATED"
+                })
+            }
+        })
     };
 
     const handleDeleteTask = (id: number) => {
         // Trigger the mutation to add a new task
-        trpc.delete.mutate(id)
+        // trpc.delete.mutate(id)
+        deleteTaskMutation.mutate(id, {
+            onSuccess: (task) => {
+                task && setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))
+                tasks && setStatus({
+                    task: task as Task,
+                    field: "task",
+                    action: "DELETED"
+                })
+            }
+        })
     };
-
-    // websocket
 
     useEffect(() => {
         handleClickScroll(id?.toString())
