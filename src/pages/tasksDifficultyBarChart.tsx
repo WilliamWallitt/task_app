@@ -2,8 +2,8 @@ import React from "react";
 import {Task} from "~/pages/tasks";
 import {
     Bar,
-    BarChart, Brush, CartesianGrid, Legend,
-    ResponsiveContainer, Tooltip, XAxis, YAxis,
+    BarChart, CartesianGrid, Legend,
+    ResponsiveContainer, XAxis, YAxis,
 } from "recharts";
 
 export interface TasksDifficultyBarChartProps {

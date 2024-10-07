@@ -1,5 +1,4 @@
-import React, {useEffect, useRef} from "react"
-import { useState } from "react";
+import React, {useEffect} from "react"
 import Editor from "react-simple-code-editor";
 
 export enum Type {

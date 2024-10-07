@@ -3,7 +3,7 @@ import en from 'javascript-time-ago/locale/en'
 import styles from "./index.module.css";
 import React, {useEffect, useState} from "react";
 import {Hint as PrismaHint, Hint_Bullet, Task as PrismaTask} from "@prisma/client";
-import {trpc} from "~/utils/trpc";
+// import {trpc} from "~/utils/trpc";
 import {Field, Type} from "~/pages/field";
 import {Status as NavStatus} from "~/shared/navbar/navbar";
 import {Hints} from "~/pages/hints";

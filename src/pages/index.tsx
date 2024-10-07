@@ -5,7 +5,7 @@ import {api} from "~/utils/api";
 import Tasks, {Task, View} from "~/pages/tasks";
 import Head from "next/head";
 import Navbar, {Status, THEME} from "~/shared/navbar/navbar";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useMemo, useState} from "react";
 
 TimeAgo.addLocale(en)
 
