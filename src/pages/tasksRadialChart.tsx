@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Task} from "~/pages/tasks";
 import {Pie, PieChart, ResponsiveContainer, Sector} from "recharts";
 import styles from "~/pages/index.module.css";
+import {TasksDifficultyBarChart} from "~/pages/tasksDifficultyBarChart";
 
 interface TasksRadialChartProps {
     tasks: Task[],
@@ -82,7 +83,9 @@ export const TasksRadialChart = ({tasks}: TasksRadialChartProps) => {
 
 
     return (
-        <div className={`${styles.row} ${styles.row_center}`}>
+        <div className={`${styles.row}`}>
+            <TasksDifficultyBarChart tasks={tasks}/>
+
             <ResponsiveContainer width={"95%"} height={window.innerWidth < 1000 ? 300 : 500}>
                 <PieChart>
                     <Pie

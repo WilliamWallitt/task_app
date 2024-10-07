@@ -5,7 +5,7 @@ import {websocketRouter} from "~/server/api/routers/websocket";
 
 const wss = new WebSocketServer({
     port: 3001,
-    host: '0.0.0.0', // Add this line
+    host: '0.0.0.0',
 });
 const handler = applyWSSHandler({
     wss,

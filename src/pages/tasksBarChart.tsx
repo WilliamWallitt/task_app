@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "~/pages/index.module.css";
-import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {Bar, BarChart, Brush, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {StatusType, Task} from "~/pages/tasks";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -69,6 +69,7 @@ export const TasksBarChart = ({tasks, graphFilter}: TasksBarChartProps) => {
                         padding: "2px 4px"
                     }}/>
                     <Bar radius={4} dataKey={graphFilter} fill="var(--text-color)"/>
+                    <Brush dataKey="createdAt" height={30} stroke="var(--text-color)" fill={"var(--bg-color-dark)"} />
                 </BarChart>
             </ResponsiveContainer>
         </div>
