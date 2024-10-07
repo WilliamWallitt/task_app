@@ -2,7 +2,7 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 
 import {api} from "~/utils/api";
-import Tasks, {Task, View} from "~/pages/tasks";
+import Tasks, {Task, View} from "~/components/tasks";
 import Head from "next/head";
 import Navbar, {Status, THEME} from "~/shared/navbar/navbar";
 import React, {useMemo, useState} from "react";

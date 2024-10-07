@@ -1,5 +1,5 @@
 import React from "react";
-import {Task} from "~/pages/tasks";
+import {Task} from "~/components/tasks";
 import {
     Bar,
     BarChart, CartesianGrid, Legend,

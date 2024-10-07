@@ -2,7 +2,7 @@ import styles from "./styles.module.css"
 import tasksStyles from "../../pages/index.module.css"
 import {FileText, Layers, Moon, Sun} from "react-feather";
 import Clock from "~/shared/clock";
-import {Task, View} from "~/pages/tasks";
+import {Task, View} from "~/components/tasks";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import {useEffect} from "react";

@@ -1,8 +1,8 @@
 import React, {useState} from "react";
-import {Task} from "~/pages/tasks";
+import {Task} from "~/components/tasks";
 import {Pie, PieChart, ResponsiveContainer, Sector} from "recharts";
 import styles from "~/pages/index.module.css";
-import {TasksDifficultyBarChart} from "~/pages/tasksDifficultyBarChart";
+import {TasksDifficultyBarChart} from "~/components/tasksDifficultyBarChart";
 
 interface TasksRadialChartProps {
     tasks: Task[],

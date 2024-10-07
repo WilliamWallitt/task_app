@@ -3,7 +3,7 @@ import {Task as T} from "./tasks"
 import styles from "~/pages/index.module.css";
 import ReactStars from "react-stars";
 import {Copy} from "react-feather";
-import {Field, Type} from "~/pages/field";
+import {Field, Type} from "~/components/field";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 

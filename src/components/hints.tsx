@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import styles from "~/pages/index.module.css";
-import {Field, Type} from "~/pages/field";
+import {Field, Type} from "~/components/field";
 import Toggle from "react-toggle";
-import {Hint} from "~/pages/tasks";
+import {Hint} from "~/components/tasks";
 import {api} from "~/utils/api";
 
 interface HintsProps {

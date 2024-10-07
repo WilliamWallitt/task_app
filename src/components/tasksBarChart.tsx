@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "~/pages/index.module.css";
 import {Bar, BarChart, Brush, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {StatusType, Task} from "~/pages/tasks";
+import {StatusType, Task} from "~/components/tasks";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 

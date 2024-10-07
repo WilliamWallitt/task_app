@@ -1,14 +1,14 @@
-import styles from "./index.module.css";
+import styles from "../pages/index.module.css";
 import React, {useEffect, useState} from "react";
 import {Hint as PrismaHint, Hint_Bullet, Task as PrismaTask} from "@prisma/client";
 // import {trpc} from "~/utils/trpc";
-import {Field, Type} from "~/pages/field";
+import {Field, Type} from "~/components/field";
 import {Status as NavStatus} from "~/shared/navbar/navbar";
-import {Hints} from "~/pages/hints";
-import {Intro} from "~/pages/intro";
-import {TasksBarChart} from "~/pages/tasksBarChart";
-import {TaskContent} from "~/pages/task";
-import {TasksRadialChart} from "~/pages/tasksRadialChart";
+import {Hints} from "~/components/hints";
+import {Intro} from "~/components/intro";
+import {TasksBarChart} from "~/components/tasksBarChart";
+import {TaskContent} from "~/components/task";
+import {TasksRadialChart} from "~/components/tasksRadialChart";
 import Toggle from "react-toggle";
 import {api} from "~/utils/api";
 
