@@ -3,40 +3,36 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DB")
 }
 
 model Task {
   id         Int      @id @default(autoincrement())
-  task       String
-  answer     String
-  comments   String
+  task       String   @db.Text
+  answer     String   @db.Text
+  comments   String   @db.Text
   difficulty Int      @default(0)
   status     String   @default("DRAFT")
   completed  Boolean  @default(false)
   attempts   Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  @@index([task])
 }
 
 model Hint {
   id        Int           @id @default(autoincrement())
-  hint      String
+  hint      String        @db.Text
   createdAt DateTime      @default(now())
   bullets   Hint_Bullet[]
-
-  @@index([hint])
 }
 
 model Hint_Bullet {
   id        Int      @id @default(autoincrement())
-  bullet    String
+  bullet    String   @db.Text
   createdAt DateTime @default(now())
   hintId    Int
   Hint      Hint     @relation(fields: [hintId], references: [id])
 
-  @@index([bullet])
+  @@index([hintId], map: "Hint_Bullet_hintId_fkey")
 }
