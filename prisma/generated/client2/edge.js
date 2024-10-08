@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 Object.defineProperty(exports, "__esModule", { value: true });
 
@@ -27,7 +28,7 @@ const {
 
 const Prisma = {}
 
-exports.Prisma = Prisma
+export {Prisma}
 exports.$Enums = {}
 
 /**
@@ -80,14 +81,14 @@ Prisma.NullTypes = {
 /**
  * Enums
  */
-exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
-exports.Prisma.TaskScalarFieldEnum = {
+Prisma.TaskScalarFieldEnum = {
   id: 'id',
   task: 'task',
   answer: 'answer',
@@ -100,26 +101,26 @@ exports.Prisma.TaskScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.HintScalarFieldEnum = {
+Prisma.HintScalarFieldEnum = {
   id: 'id',
   hint: 'hint',
   createdAt: 'createdAt'
 };
 
-exports.Prisma.Hint_BulletScalarFieldEnum = {
+Prisma.Hint_BulletScalarFieldEnum = {
   id: 'id',
   bullet: 'bullet',
   createdAt: 'createdAt',
   hintId: 'hintId'
 };
 
-exports.Prisma.SortOrder = {
+Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
 
-exports.Prisma.ModelName = {
+Prisma.ModelName = {
   Task: 'Task',
   Hint: 'Hint',
   Hint_Bullet: 'Hint_Bullet'
@@ -163,26 +164,29 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": null,
-        "value": "mysql://root:CIwmMPwpfgJMraJDAADXBgfmZhbNyXcT@autorack.proxy.rlwy.net:58384/railway"
+        "fromEnvVar": "DB",
+        "value": null
       }
     }
   },
-  "inlineSchema": "// npx prisma generate --schema=prisma/schema_my_sql.prisma\n// npx prisma migrate dev --schema=prisma/schema_my_sql.prisma --name increase_task_length\n\ndatasource db {\n  provider = \"mysql\"\n  url      = \"mysql://root:CIwmMPwpfgJMraJDAADXBgfmZhbNyXcT@autorack.proxy.rlwy.net:58384/railway\"\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client2\"\n}\n\nmodel Task {\n  id         Int      @id @default(autoincrement())\n  task       String   @db.Text\n  answer     String   @db.Text\n  comments   String   @db.Text\n  difficulty Int      @default(0)\n  status     String   @default(\"DRAFT\")\n  completed  Boolean  @default(false)\n  attempts   Int\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n}\n\nmodel Hint {\n  id        Int           @id @default(autoincrement())\n  hint      String        @db.Text\n  createdAt DateTime      @default(now())\n  bullets   Hint_Bullet[]\n}\n\nmodel Hint_Bullet {\n  id        Int      @id @default(autoincrement())\n  bullet    String   @db.Text\n  createdAt DateTime @default(now())\n  hintId    Int\n  Hint      Hint     @relation(fields: [hintId], references: [id])\n}\n",
-  "inlineSchemaHash": "3f3b0bbc3db421403684b10c52cc65292a2250660002d53f6c22854fddb09a97",
+  "inlineSchema": "// npx prisma generate --schema=prisma/schema_my_sql.prisma\n// npx prisma migrate dev --schema=prisma/schema_my_sql.prisma --name increase_task_length\n// DELETE MIGRATIONS to update prod\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DB\")\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client2\"\n}\n\nmodel Task {\n  id         Int      @id @default(autoincrement())\n  task       String   @db.Text\n  answer     String   @db.Text\n  comments   String   @db.Text\n  difficulty Int      @default(0)\n  status     String   @default(\"DRAFT\")\n  completed  Boolean  @default(false)\n  attempts   Int\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n}\n\nmodel Hint {\n  id        Int           @id @default(autoincrement())\n  hint      String        @db.Text\n  createdAt DateTime      @default(now())\n  bullets   Hint_Bullet[]\n}\n\nmodel Hint_Bullet {\n  id        Int      @id @default(autoincrement())\n  bullet    String   @db.Text\n  createdAt DateTime @default(now())\n  hintId    Int\n  Hint      Hint     @relation(fields: [hintId], references: [id])\n}\n",
+  "inlineSchemaHash": "d40e37ea147a5e85fead5833f5530e702b91fa357f6c739f5eb6605a64d4c8a4",
   "copyEngine": true
 }
 config.dirname = '/'
 
 config.runtimeDataModel = JSON.parse("{\"models\":{\"Task\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"task\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"answer\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"comments\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"difficulty\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":0,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"status\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"default\":\"DRAFT\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"completed\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"attempts\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Hint\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"hint\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"bullets\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Hint_Bullet\",\"relationName\":\"HintToHint_Bullet\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Hint_Bullet\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"bullet\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"hintId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"Hint\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Hint\",\"relationName\":\"HintToHint_Bullet\",\"relationFromFields\":[\"hintId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{},\"types\":{}}")
-defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
+defineDmmfProperty(Prisma, config.runtimeDataModel)
 config.engineWasm = undefined
 
 config.injectableEdgeEnv = () => ({
-  parsed: {}
+  parsed: {
+    DB: typeof globalThis !== 'undefined' && globalThis['DB'] || typeof process !== 'undefined' && process.env && process.env.DB || undefined
+  }
 })
 
 if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {

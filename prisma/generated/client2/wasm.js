@@ -12,7 +12,7 @@ const {
 
 const Prisma = {}
 
-exports.Prisma = Prisma
+export {Prisma}
 exports.$Enums = {}
 
 /**
@@ -112,14 +112,14 @@ Prisma.NullTypes = {
  * Enums
  */
 
-exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
-exports.Prisma.TaskScalarFieldEnum = {
+Prisma.TaskScalarFieldEnum = {
   id: 'id',
   task: 'task',
   answer: 'answer',
@@ -132,26 +132,26 @@ exports.Prisma.TaskScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.HintScalarFieldEnum = {
+Prisma.HintScalarFieldEnum = {
   id: 'id',
   hint: 'hint',
   createdAt: 'createdAt'
 };
 
-exports.Prisma.Hint_BulletScalarFieldEnum = {
+Prisma.Hint_BulletScalarFieldEnum = {
   id: 'id',
   bullet: 'bullet',
   createdAt: 'createdAt',
   hintId: 'hintId'
 };
 
-exports.Prisma.SortOrder = {
+Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
 
-exports.Prisma.ModelName = {
+Prisma.ModelName = {
   Task: 'Task',
   Hint: 'Hint',
   Hint_Bullet: 'Hint_Bullet'

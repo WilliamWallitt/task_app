@@ -10,9 +10,9 @@ const {
 } = require('./runtime/index-browser.js')
 
 
-const Prisma = {}
+let Prisma = {}
 
-exports.Prisma = Prisma
+export {Prisma}
 exports.$Enums = {}
 
 /**
@@ -112,7 +112,7 @@ Prisma.NullTypes = {
  * Enums
  */
 
-exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
@@ -148,7 +148,7 @@ exports.Prisma.SortOrder = {
 };
 
 
-exports.Prisma.ModelName = {
+Prisma.ModelName = {
   Task: 'Task',
   Hint: 'Hint',
   Hint_Bullet: 'Hint_Bullet'

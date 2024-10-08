@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 Object.defineProperty(exports, "__esModule", { value: true });
 
@@ -189,7 +190,7 @@ if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !
   Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined)
 }
 
-const PrismaClient = getPrismaClient(config)
+let PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 

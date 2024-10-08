@@ -16,7 +16,7 @@ const createPrismaClient = () => {
 };
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof createPrismaClient> | undefined;
+    prisma: SQLiteClient | MySQLClient | undefined;
 };
 
 export const db = globalForPrisma.prisma ?? createPrismaClient();

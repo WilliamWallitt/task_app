@@ -1,9 +1,10 @@
 // npx prisma generate --schema=prisma/schema_my_sql.prisma
 // npx prisma migrate dev --schema=prisma/schema_my_sql.prisma --name increase_task_length
+// DELETE MIGRATIONS to update prod
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:CIwmMPwpfgJMraJDAADXBgfmZhbNyXcT@autorack.proxy.rlwy.net:58384/railway"
+  url      = env("DB")
 }
 
 generator client {

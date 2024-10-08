@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 Object.defineProperty(exports, "__esModule", { value: true });
 
@@ -25,7 +26,7 @@ const {
 } = require('./runtime/library.js')
 
 
-const Prisma = {}
+let Prisma = {}
 
 exports.Prisma = Prisma
 exports.$Enums = {}
@@ -204,7 +205,7 @@ warnEnvConflicts({
     schemaEnvPath: config.relativeEnvPaths.schemaEnvPath && path.resolve(config.dirname, config.relativeEnvPaths.schemaEnvPath)
 })
 
-const PrismaClient = getPrismaClient(config)
+let PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
