@@ -1,17 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// npx prisma migrate dev --name Difficulty
-// npx prisma generate
-// npx prisma db push
-
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/client1"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DB")
 }
 
 model Task {
@@ -42,8 +36,8 @@ model Hint_Bullet {
   id        Int      @id @default(autoincrement())
   bullet    String
   createdAt DateTime @default(now())
-  Hint      Hint     @relation(fields: [hintId], references: [id])
   hintId    Int
+  Hint      Hint     @relation(fields: [hintId], references: [id])
 
   @@index([bullet])
 }
