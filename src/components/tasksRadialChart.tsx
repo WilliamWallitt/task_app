@@ -83,10 +83,8 @@ export const TasksRadialChart = ({tasks}: TasksRadialChartProps) => {
 
 
     return (
-        <div className={`${styles.row}`}>
-            <TasksDifficultyBarChart tasks={tasks}/>
-
-            <ResponsiveContainer width={"95%"} height={window.innerWidth < 1000 ? 300 : 500}>
+        <div className={`${styles.col} ${styles.width_100}`}>
+            <ResponsiveContainer width={"95%"} height={window.innerWidth < 1000 ? 500 : 800}>
                 <PieChart>
                     <Pie
                         activeIndex={activeIndex}
@@ -96,13 +94,15 @@ export const TasksRadialChart = ({tasks}: TasksRadialChartProps) => {
                         cx="50%"
                         cy="50%"
                         innerRadius={"30%"}
-                        outerRadius={"50%"}
-                        fill="var(--text-color)"
+                        outerRadius={"40%"}
+                        fill="var(--link-color)"
                         dataKey="value"
                         onMouseEnter={onPieEnter}
                     />
                 </PieChart>
             </ResponsiveContainer>
+            <TasksDifficultyBarChart tasks={tasks}/>
+
         </div>
     )
 }

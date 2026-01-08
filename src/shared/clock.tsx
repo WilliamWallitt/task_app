@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from "../pages/index.module.css";
 
 const Clock: React.FC = () => {
     const [time, setTime] = useState<Date | null>(null);
@@ -20,7 +21,7 @@ const Clock: React.FC = () => {
     }
 
     return (
-        <p>{time.toLocaleTimeString()}</p>
+        <p className={styles.small_text}>{time.toLocaleTimeString()}</p>
     );
 };
 

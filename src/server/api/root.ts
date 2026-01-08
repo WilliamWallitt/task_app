@@ -2,6 +2,9 @@ import { taskRouter } from "~/server/api/routers/task";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import {hintRouter} from "~/server/api/routers/hint";
 import {hintBulletRouter} from "~/server/api/routers/hint_bullet";
+import {userRouter} from "~/server/api/routers/user";
+import {noteRouter} from "~/server/api/routers/note";
+import {imageRouter} from "~/server/api/routers/image";
 
 /**
  * This is the primary router for your server.
@@ -12,7 +15,10 @@ import {hintBulletRouter} from "~/server/api/routers/hint_bullet";
 export const appRouter = createTRPCRouter({
   task: taskRouter,
   hint: hintRouter,
-  hintBullet: hintBulletRouter
+  hintBullet: hintBulletRouter,
+  user: userRouter,
+  note: noteRouter,
+  image: imageRouter
 });
 
 // export type definition of API

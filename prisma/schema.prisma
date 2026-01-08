@@ -3,36 +3,132 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlserver"
   url      = env("DB")
 }
 
 model Task {
-  id         Int      @id @default(autoincrement())
-  task       String   @db.Text
-  answer     String   @db.Text
-  comments   String   @db.Text
-  difficulty Int      @default(0)
-  status     String   @default("DRAFT")
-  completed  Boolean  @default(false)
+  id         Int        @id @default(autoincrement())
+  task       String     @db.NVarChar(4000)
+  answer     String     @db.NVarChar(4000)
+  comments   String     @db.NVarChar(4000)
+  difficulty Int        @default(0)
+  status     String     @default("DRAFT")
+  completed  Boolean    @default(false)
   attempts   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  title      String     @default("") @db.Text
+  archived   Boolean    @default(false)
+  Comment    Comment[]
+  users      TaskUser[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String   @db.NVarChar(4000)
+  createdAt DateTime @default(now())
+  userId    Int
+  taskId    Int
+  updatedAt DateTime
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([taskId], map: "Comment_taskId_fkey")
+  @@index([userId], map: "Comment_userId_fkey")
 }
 
 model Hint {
   id        Int           @id @default(autoincrement())
-  hint      String        @db.Text
+  hint      String        @db.NVarChar(4000)
   createdAt DateTime      @default(now())
   bullets   Hint_Bullet[]
+  users     HintUser[]
 }
 
 model Hint_Bullet {
   id        Int      @id @default(autoincrement())
-  bullet    String   @db.Text
+  bullet    String   @db.NVarChar(4000)
   createdAt DateTime @default(now())
   hintId    Int
   Hint      Hint     @relation(fields: [hintId], references: [id])
 
   @@index([hintId], map: "Hint_Bullet_hintId_fkey")
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  note      String   @db.NVarChar(4000)
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id                  Int          @id @default(autoincrement())
+  name                String
+  pin                 String
+  role                String       @default("USER")
+  avatar              String?
+  email               String
+  level               Int          @default(0)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  lastSignedIn        DateTime     @default(now())
+  imageId             Int?
+  codingStyle         String       @default("functional")
+  learningGoals       String       @default("None")
+  objective           String       @default("None")
+  personalityType     String?      @default("creative")
+  preferredDifficulty String       @default("comfort")
+  preferredTopics     String       @default("None")
+  prefersCodeQuality  Boolean      @default(false)
+  pythonVersion       String       @default("3.8")
+  riskTolerance       String?      @default("low")
+  strengths           String       @default("None")
+  taskTypePreference  String       @default("puzzle")
+  timePerTaskMinutes  Int?
+  weaknesses          String       @default("None")
+  Comment             Comment[]
+  hints               HintUser[]
+  note                Note[]
+  tasks               TaskUser[]
+  image               Image?       @relation(fields: [imageId], references: [id])
+  devices             UserDevice[]
+}
+
+model UserDevice {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  device     String
+  location   String?
+  lastAccess DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, device])
+}
+
+model Image {
+  id    Int    @id @default(autoincrement())
+  image Bytes?
+  User  User[]
+}
+
+model TaskUser {
+  taskId Int
+  userId Int
+  task   Task @relation(fields: [taskId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@id([taskId, userId])
+}
+
+model HintUser {
+  hintId Int
+  userId Int
+  hint   Hint @relation(fields: [hintId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@id([hintId, userId])
 }

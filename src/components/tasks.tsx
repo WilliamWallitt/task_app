@@ -1,16 +1,39 @@
 import styles from "../pages/index.module.css";
 import React, {useEffect, useState} from "react";
-import {Hint as PrismaHint, Hint_Bullet, Task as PrismaTask} from "@prisma/client";
-// import {trpc} from "~/utils/trpc";
-import {Field, Type} from "~/components/field";
-import {Status as NavStatus} from "~/shared/navbar/navbar";
+import {
+    Hint as PrismaHint,
+    Hint_Bullet,
+    HintUser,
+    Image as PrismaImage,
+    Task as PrismaTask,
+    TaskUser,
+    User,
+    Comment,
+    UserDevice
+} from "@prisma/client";
 import {Hints} from "~/components/hints";
-import {Intro} from "~/components/intro";
+import {WeatherForcast} from "~/components/weatherForcast";
 import {TasksBarChart} from "~/components/tasksBarChart";
 import {TaskContent} from "~/components/task";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+import {entireState, useAppDispatch, useAppSelector} from "~/redux/store";
+import {AdminUsers} from "~/components/adminUsers";
+import {Notes} from "~/components/notes";
+import {AddTask} from "~/components/addTask";
+import {SearchTasks} from "~/components/searchTasks";
+import 'reactjs-popup/dist/index.css';
+import {AdminTaskHintSettings} from "~/components/adminTaskHintSettings";
 import {TasksRadialChart} from "~/components/tasksRadialChart";
-import Toggle from "react-toggle";
-import {api} from "~/utils/api";
+import {AdminImages} from "~/components/adminImages";
+import {AnimatePresence, motion} from "framer-motion";
+import {AnimatedContent, AnimatedContentType} from "~/components/animatedContent";
+import {UserLoginSignup} from "~/components/userLoginSignup";
+import UpdatedTask from "~/components/updatedTask";
+import {action} from "~/redux/state";
+import InfiniteScroll from "react-infinite-scroll-component";
+import {Loader} from "react-feather";
+import {Teacher} from "~/components/teacher";
 
 // Define allowed status values
 export const Status = {
@@ -23,34 +46,73 @@ export const Status = {
 // Create a union type from the Status object
 export type StatusType = typeof Status[keyof typeof Status];
 
-export type Task = Omit<PrismaTask, 'status'> & { status: StatusType };
+interface WithTaskUsers {
+    users: TaskUser[]
+}
 
-export interface Hint extends PrismaHint {
+interface WithComments {
+    Comment: Comment[]
+}
+
+interface WithHintUsers {
+    users: HintUser[]
+}
+
+export type Task = Omit<PrismaTask, 'status'> & { status: StatusType } & WithTaskUsers & WithComments;
+
+export interface BaseHint extends PrismaHint {
     bullets: Hint_Bullet[]
 }
 
-interface TasksProps {
-    taskData: Task[];
-    hintData:  Hint[];
-    setStatus: (status: NavStatus) => void;
-    view: View;
-    pdfViewer: React.JSX.Element;
+export type Hint = BaseHint & WithHintUsers
+
+export type Image = Omit<PrismaImage, "image"> & {image: string | undefined}
+
+export interface Status {
+    action: "ADDED" | "DELETED" | "UPDATED",
+    task: Task,
+    field: keyof Task
 }
+
 
 export enum View {
+    HOME,
     TASKS,
-    FILE
+    HINT,
+    STATS,
+    NOTES,
+    MISC,
+    ADMIN,
+    LOGIN_SIGNUP,
+    USER_EDIT,
+    TEACHER
 }
 
-export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: TasksProps) {
+export enum AdminView {
+    TASKS,
+    HINTS,
+    USERS,
+    IMAGES
+}
+
+TimeAgo.addLocale(en)
+
+interface TasksProps {
+
+}
+
+export default function Tasks({}: TasksProps) {
+
+    const dispatch = useAppDispatch()
+    const state = useAppSelector(entireState)
+    const {view, status, taskData, hintData, user, adminView} = state
+
+    // const timeAgo = new TimeAgo('en-US')
 
     const [tasks, setTasks] = useState<Task[]>(taskData)
     const [id, setId] = useState<number | undefined>(undefined)
-    const [searchInput, setSearchInput] = useState<string>("")
-    const [dropdown, setDropdown] = useState<keyof Task>("task")
-    const [input, setInput] = useState<string>("")
-    const [graphFilter, setGraphFilter] = useState<StatusType | "ALL">("COMPLETED")
-    const [showAll, setShowAll] = useState<boolean>(false)
+    const [graphFilter, setGraphFilter] = useState<StatusType | "ALL">("ALL")
+    const [hints, setHints] = useState<Hint[]>(hintData)
 
     const handleClickScroll = (id: string | undefined) => {
         if (!id) {
@@ -66,241 +128,255 @@ export default function Tasks({hintData, taskData, setStatus, view, pdfViewer}: 
         }
     };
 
-    const addTaskMutation = api.task.add.useMutation()
-    const deleteTaskMutation = api.task.delete.useMutation()
-    const updateTaskMutation = api.task.update.useMutation()
-
-    // useEffect(() => {
-    //     const addSubscription = trpc.onAdd.subscribe(undefined,  {
-    //         onError: (err) => {
-    //             console.error('Subscription error:', err);
-    //         },
-    //         onData: (task) => {
-    //             task && setTasks((prevTasks) => [task as Task, ...prevTasks])
-    //             setInput("")
-    //             tasks && setStatus({
-    //                 task: task as Task,
-    //                 field: "task",
-    //                 action: "ADDED"
-    //             })
-    //         }
-    //     })
-    //     // Use tRPC subscription to listen for 'onAdd' events
-    //     const updateSubscription = trpc.onUpdate.subscribe(undefined, {
-    //         onError: (err) => {
-    //             console.error('Subscription error:', err);
-    //         },
-    //         onData: (task) => {
-    //             task && setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x));
-    //             tasks && setStatus({
-    //                 task: task as Task,
-    //                 field: "task",
-    //                 action: "UPDATED"
-    //             })
-    //         }
-    //     })
-    //
-    //     const deleteSubscription = trpc.onDelete.subscribe(undefined, {
-    //         onError: (err) => {
-    //             console.error('Subscription error:', err);
-    //         },
-    //         onData: (task) => {
-    //             task && setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))
-    //             tasks && setStatus({
-    //                 task: task as Task,
-    //                 field: "task",
-    //                 action: "DELETED"
-    //             })
-    //         }
-    //     })
-    //
-    //     return () => {
-    //         addSubscription.unsubscribe()
-    //         updateSubscription.unsubscribe()
-    //         deleteSubscription.unsubscribe()
-    //     }
-    // }, []);
-
-    const func = (a: Task, b: Task): number => {
-
-        let aIncludes = true
-        let bIncludes = true
-
-        if (typeof a[dropdown] === "string" && typeof b[dropdown] === "string") {
-            aIncludes = a[dropdown].toLowerCase().includes(searchInput.toLowerCase());
-            bIncludes = b[dropdown].toLowerCase().includes(searchInput.toLowerCase());
-
-            // If both include or both don't include, keep their original order
-            if (aIncludes && bIncludes) return 0;
-            if (!aIncludes && !bIncludes) return 0;
-
-            // If 'a' includes the input, sort it before 'b'
-            if (aIncludes) return -1;
-
-            // If 'b' includes the input, sort it before 'a'
-            return 1;
-        }
-
-        if (typeof a[dropdown] === "number" && typeof b[dropdown] === "number") {
-            const searchValue = Number.parseInt(searchInput);
-
-            if (a[dropdown] == searchValue) return -1
-            if (b[dropdown] == searchValue) return 1
-            return b[dropdown] - a[dropdown]
-        }
-        return 0
-
-    }
+    useEffect(() => {
+        setTasks(taskData)
+    }, [taskData]);
 
     useEffect(() => {
-        setTasks((prevState) => searchInput === ""
-            ? [...prevState].sort((a, b) => a.createdAt > b.createdAt ? -1 : 1)
-            : [...prevState].sort(func))
-    }, [searchInput, dropdown]);
+        setHints(hintData)
+    }, [hintData]);
 
-    const handleAddTask = () => {
-        // Trigger the mutation to add a new task
-        // trpc.add.mutate(input)
-        addTaskMutation.mutate(input, {
-            onSuccess: (task) => {
-                if (task) {
-                    setTasks((prevTasks) => [task as Task, ...prevTasks])
-                }
-                setInput("")
-                if (tasks) {
-                    setStatus({
-                        task: task as Task,
-                        field: "task",
-                        action: "ADDED"
-                    })
-                }
-            }
-        })
-    };
-
-    const handleUpdateTask = (id: number) => {
-        // Trigger the mutation to add a new task
-        const task = tasks.find(x => x.id === id)
-        // task && trpc.update.mutate(task)
-        if (task) {updateTaskMutation.mutate(task, {
-            onSuccess: (task) => {
-                if (task) { setTasks((prevTasks) => prevTasks.map(x => x.id === task.id ? task as Task : x)) }
-                if (tasks) { setStatus({
-                    task: task as Task,
-                    field: "task",
-                    action: "UPDATED"
-                })}
-            }
-        })}
-    };
-
-    const handleDeleteTask = (id: number) => {
-        // Trigger the mutation to add a new task
-        // trpc.delete.mutate(id)
-        deleteTaskMutation.mutate(id, {
-            onSuccess: (task) => {
-                if (task) { setTasks((prevTasks) => prevTasks.filter(x => x.id !== task.id))}
-                if (tasks) { setStatus({
-                    task: task as Task,
-                    field: "task",
-                    action: "DELETED"
-                })}
-            }
-        })
-    };
 
     useEffect(() => {
         handleClickScroll(id?.toString())
     }, [tasks]);
 
-    if (view === View.FILE ) {
-        return (
-            <div className={styles.main}>
-                {pdfViewer}
-            </div>
-        )
+
+    // // testing
+    //
+    // const [visibleTasks, setVisibleTasks] = useState(tasks.slice(0, 9)); // Load first 9
+    // const [hasMore, setHasMore] = useState(tasks.length > 9);
+    //
+    // useEffect(() => {
+    //     setVisibleTasks(tasks.slice(0, 9))
+    //     setHasMore(tasks.length > 9)
+    // }, [tasks]);
+    //
+    // const loadMoreTasks = () => {
+    //     const nextTasks = tasks.slice(visibleTasks.length, visibleTasks.length + 9);
+    //     setVisibleTasks((prev) => [...prev, ...nextTasks]);
+    //     if (visibleTasks.length + 9 >= tasks.length) setHasMore(false);
+    // };
+    //
+    // // end
+
+    const renderView = (view: View) => {
+        switch (view) {
+            case View.MISC:
+                return (
+                    <div className={styles.main}>
+                        <WeatherForcast/>
+                    </div>
+                );
+            case View.HOME:
+                return <></>;
+            case View.TASKS:
+                return (
+                    <>
+                        <main className={`${styles.main}`}>
+                            <div className={`${styles.col} ${styles.width_100}`}>
+
+                                {user && <UpdatedTask userId={user.id}/>}
+
+                                <div className={`${styles.row} ${styles.task_row} ${styles.width_100}`}>
+
+                                    <div className={`${styles.col} ${styles.width_100}`}>
+
+                                        <SearchTasks setTasks={setTasks} tasks={tasks}
+                                                     isAdmin={false}/>
+
+                                        {/*TODO - keep this for now */}
+                                        {/*<motion.div*/}
+                                        {/*    initial="hidden"*/}
+                                        {/*    animate="visible"*/}
+                                        {/*    variants={{*/}
+                                        {/*        hidden: { opacity: 0 },*/}
+                                        {/*        visible: {*/}
+                                        {/*            opacity: 1,*/}
+                                        {/*            transition: { staggerChildren: 0.1 }*/}
+                                        {/*        }*/}
+                                        {/*    }}*/}
+                                        {/*    className={`${styles.row} ${styles.row_wrap}`}*/}
+                                        {/*>*/}
+                                        {/*    {(tasks && tasks.length > 0 && tasks.map(x => (*/}
+                                        {/*        <TaskContent hints={hints} isAdmin={false} key={x.id} setId={setId}*/}
+                                        {/*                     x={x} tasks={tasks} setTasks={setTasks}/>*/}
+                                        {/*    )))}*/}
+                                        {/*</motion.div>*/}
+
+
+                                        <div
+                                            className={`${styles.row} ${styles.row_wrap}`}
+                                        >
+                                            {tasks.filter(x => !x.archived || user?.role === "MASTER").map((x) => (
+                                                <TaskContent
+                                                    key={x.id}
+                                                    x={x}
+                                                    hints={hints}
+                                                    isAdmin={false}
+                                                    setId={setId}
+                                                    tasks={tasks}
+                                                    setTasks={setTasks}
+                                                />
+                                            ))}
+                                            {/*<InfiniteScroll*/}
+                                            {/*    dataLength={visibleTasks.length}*/}
+                                            {/*    next={loadMoreTasks}*/}
+                                            {/*    hasMore={hasMore}*/}
+                                            {/*    loader={<p className="text-center p-4">Loading more tasks...</p>}*/}
+                                            {/*    className={`${styles.row} ${styles.row_wrap}`}*/}
+                                            {/*>*/}
+                                            {/*    {visibleTasks.map((x) => (*/}
+                                            {/*        <TaskContent*/}
+                                            {/*            key={x.id}*/}
+                                            {/*            x={x}*/}
+                                            {/*            hints={hints}*/}
+                                            {/*            isAdmin={false}*/}
+                                            {/*            setId={setId}*/}
+                                            {/*            tasks={tasks}*/}
+                                            {/*            setTasks={setTasks}*/}
+                                            {/*        />*/}
+                                            {/*    ))}*/}
+                                            {/*</InfiniteScroll>*/}
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </main>
+                    </>
+                );
+            case View.HINT:
+                return (
+                    <div className={styles.main}>
+                    <Hints hints={hints} isAdmin={false}/>
+                </div>
+            );
+            case View.STATS:
+            return (
+                <div className={styles.main}>
+                    <div className={`${styles.row} ${styles.row_center}`}
+                         style={{justifyContent: "center"}}>
+                        <p className={`${styles.margin_10px}`}><strong className="clickable"
+                                                                                          onClick={() => setGraphFilter("ALL")}>{tasks.length}</strong> Tasks&nbsp;&#x2022;&nbsp;
+                                <strong className="clickable"
+                                        onClick={() => setGraphFilter("COMPLETED")}>{tasks.filter(x => x.status === "COMPLETED").length}</strong> completed&nbsp;&#x2022;&nbsp;
+                                <strong className="clickable"
+                                        onClick={() => setGraphFilter("IN_PROGRESS")}>{tasks.filter(x => x.status === "IN_PROGRESS").length}</strong> in
+                                progress&nbsp;&#x2022;&nbsp;<strong className="clickable"
+                                                                    onClick={() => setGraphFilter("DRAFT")}>{tasks.filter(x => x.status === "DRAFT").length}</strong> pending&nbsp;&#x2022;&nbsp;<strong className="clickable"
+                                                            onClick={() => setGraphFilter("FAILED")}>{tasks.filter(x => x.status === "FAILED").length}</strong> failed
+                            </p>
+                        </div>
+
+                        <TasksBarChart graphFilter={graphFilter} tasks={tasks}/>
+
+                        <TasksRadialChart tasks={tasks}/>
+                    </div>
+                );
+            case View.NOTES:
+                return <Notes/>;
+            case View.TEACHER:
+                return <Teacher tasks={tasks} setTasks={(prevTasks) => setTasks(prevTasks)}/>
+            case View.ADMIN:
+                return (
+                    <div className={styles.main}>
+
+                        <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                            <div style={{justifyContent: "center", alignItems: "center"}}
+                                 className={`${styles.row} ${styles.width_100} ${styles.padding_10px}`}>
+                                {Object.entries(AdminView).filter(([k, v]) => isNaN(parseInt(k))).map(([k, v]) => (
+                                    <button onClick={() => (dispatch(action({adminView: v as AdminView})))} className={`${(adminView === v) && styles.selected}`}>
+                                        <p>{k[0] + k.slice(1, k.length).toLowerCase()}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </AnimatedContent>
+
+                        {adminView === AdminView.USERS &&
+                            <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                                <AdminUsers/>
+                            </AnimatedContent>
+                        }
+                        {adminView === AdminView.IMAGES &&
+                            <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                                <AdminImages/>
+                            </AnimatedContent>
+                        }
+                        {adminView === AdminView.TASKS &&
+                            <>
+                                <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                                    <AddTask tasks={tasks} setTasks={(prevTasks) => setTasks(prevTasks)}/>
+
+                                    <SearchTasks setTasks={setTasks} tasks={tasks} isAdmin={true}/>
+                                    <div
+                                        className={`${styles.row} ${styles.row_wrap}`}
+                                    >
+                                        {tasks.map((x) => (
+                                            <TaskContent
+                                                key={x.id}
+                                                x={x}
+                                                hints={hints}
+                                                isAdmin={true}
+                                                setId={setId}
+                                                tasks={tasks}
+                                                setTasks={setTasks}
+                                            />
+                                        ))}
+                                        {/*<InfiniteScroll*/}
+                                        {/*    dataLength={visibleTasks.length}*/}
+                                        {/*    next={loadMoreTasks}*/}
+                                        {/*    hasMore={hasMore}*/}
+                                        {/*    loader={<p className="text-center p-4">Loading more tasks...</p>}*/}
+                                        {/*    className={`${styles.row} ${styles.row_wrap}`}*/}
+                                        {/*>*/}
+                                        {/*    {visibleTasks.map((x) => (*/}
+                                        {/*        <TaskContent*/}
+                                        {/*            key={x.id}*/}
+                                        {/*            x={x}*/}
+                                        {/*            hints={hints}*/}
+                                        {/*            isAdmin={true}*/}
+                                        {/*            setId={setId}*/}
+                                        {/*            tasks={tasks}*/}
+                                        {/*            setTasks={setTasks}*/}
+                                        {/*        />*/}
+                                        {/*    ))}*/}
+                                        {/*</InfiniteScroll>*/}
+                                    </div>
+
+                                </AnimatedContent>
+
+                            </>
+                        }
+                        {adminView == AdminView.HINTS &&
+                            <>
+                                <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                                    <div style={{justifyContent: "center", alignItems: "center"}}
+                                         className={`${styles.col} ${styles.width_100} ${styles.padding_10px}`}>
+                                        <Hints hints={hints} isAdmin={true}/>
+                                    </div>
+                                </AnimatedContent>
+                            </>
+                        }
+                    </div>
+                );
+            case View.LOGIN_SIGNUP:
+                return <></>;
+
+        }
     }
 
     return (
         <>
-            <main className={styles.main}>
-                <div className={`${styles.col} ${styles.width_100}`}>
-                    <Intro/>
-                    <div className={`${styles.row} ${styles.task_row} ${styles.width_100}`}>
-                        <Hints hintData={hintData}/>
-                        <div className={styles.col}>
-
-                            <TasksRadialChart tasks={tasks}/>
-                            <div className={`${styles.row} ${styles.row_center}`}
-                                 style={{justifyContent: "center"}}>
-                                <p className={styles.margin_10px}><strong className="clickable"
-                                           onClick={() => setGraphFilter("ALL")}>{tasks.length}</strong> Tasks&nbsp;&#x2022;&nbsp;
-                                    <strong className="clickable"
-                                            onClick={() => setGraphFilter("COMPLETED")}>{tasks.filter(x => x.status === "COMPLETED").length}</strong> completed&nbsp;&#x2022;&nbsp;
-                                    <strong className="clickable"
-                                            onClick={() => setGraphFilter("IN_PROGRESS")}>{tasks.filter(x => x.status === "IN_PROGRESS").length}</strong> in
-                                    progress&nbsp;&#x2022;&nbsp;<strong className="clickable"
-                                                                        onClick={() => setGraphFilter("DRAFT")}>{tasks.filter(x => x.status === "DRAFT").length}</strong> pending
-                                    &nbsp;&#x2022;&nbsp;<strong className="clickable"
-                                                                onClick={() => setGraphFilter("FAILED")}>{tasks.filter(x => x.status === "FAILED").length}</strong> failed
-                                </p>
-                            </div>
-
-                            <TasksBarChart graphFilter={graphFilter} tasks={tasks}/>
-
-                            <div className={`${styles.row} ${styles.width_100}`}
-                                 style={{justifyContent: "center"}}>
-                                <div
-                                    className={`${styles.col_cheat} ${styles.width_100} ${styles.padding_10px}`}>
-                                    <h1>Create a Task</h1>
-                                    <textarea rows={6} placeholder={"Task"} value={input}
-                                              onChange={(e) => setInput(e.target.value)}/>
-                                    <button style={{marginTop: "10px"}}
-                                            onClick={() => handleAddTask()}>Add
-                                    </button>
-                                </div>
-                            </div>
-
-                            {tasks && tasks.length > 0 &&
-                                <div className={`${styles.row} ${styles.row_wrap}`}
-                                     style={{justifyContent: "center"}}>
-                                    <div className={`${styles.row} ${styles.task}`}>
-                                        <Field rows={1} inputLength={0} onUpdateHandler={(input) => {
-                                            setSearchInput(input)
-                                        }} type={Type.Text} placeholder={"Search"}/>
-                                        <select onChange={(e) => setDropdown(e.target.value as keyof Task)}>
-                                            {tasks[0] && Object.keys(tasks[0]).map((x, i) => (
-                                                <option key={i} selected={dropdown === x} id={x}
-                                                        value={x}>{x}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            }
-
-                            <div className={`${styles.row} ${styles.row_wrap}`}
-                                 style={{justifyContent: "center"}}>
-                                <div className={`${styles.col_all_center} ${styles.margin_10px}`}>
-                                    <Toggle defaultChecked={showAll}
-                                        onChange={(e) => setShowAll(e.target.checked)}/>
-                                    <span style={{marginTop: "10px"}}>Show all Hints</span>
-                                </div>
-                            </div>
-
-                            <div className={`${styles.row} ${styles.row_wrap}`}
-                                 style={{justifyContent: "center"}}>
-                                {tasks && tasks.length > 0 ? (!showAll ? tasks.slice(0, 15) : tasks).map(x => (
-                                    <TaskContent key={x.id} setId={setId} x={x} tasks={tasks} setTasks={setTasks}
-                                                 handleDeleteTask={handleDeleteTask}
-                                                 handleUpdateTask={handleUpdateTask}/>
-                                )) : <p>No tasks found.</p>}
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-            </main>
+            <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                {taskData.length === 0 ?
+                    <div style={{height: "80vh"}}
+                         className={`${styles.row_col_center_width_100_height_100}`}>
+                        <Loader className={styles.loading_icon} size={14}/>
+                    </div> : renderView(view)
+                }
+            </AnimatedContent>
         </>
-    );
+    )
 }

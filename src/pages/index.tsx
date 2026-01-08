@@ -1,31 +1,46 @@
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
-
-import {api} from "~/utils/api";
-import Tasks, {Task, View} from "~/components/tasks";
+import {View} from "~/components/tasks";
 import Head from "next/head";
-import Navbar, {Status, THEME} from "~/shared/navbar/navbar";
-import React, {useMemo, useState} from "react";
+import Navbar from "~/shared/navbar/navbar";
+import React, {useEffect} from "react";
+import {entireStateImages, entireStateUser, entireStateView, useAppDispatch, useAppSelector} from "~/redux/store";
+import {action} from "~/redux/state";
+import {UserAuthWrapper} from "~/components/userAuthWrapper";
+import {Home} from "~/components/home";
+import {UserLoginSignup} from "~/components/userLoginSignup";
+import {api} from "~/utils/api";
+import {AnimatedContent, AnimatedContentType} from "~/components/animatedContent";
 
 TimeAgo.addLocale(en)
 
-export default function Home() {
-    const data = api.task.getLatest.useQuery().data
-    const hints = api.hint.getLatest.useQuery().data
+export default function Index() {
 
-    const [theme, setTheme] = useState<THEME>(THEME.LIGHT)
-    const [status, setStatus] = useState<Status | null>(null)
-    const [view, setView] = useState<View>(View.TASKS)
+    const dispatch = useAppDispatch()
+    const view = useAppSelector(entireStateView)
+    const user = useAppSelector(entireStateUser)
+    const images = useAppSelector(entireStateImages)
 
-    const pdfViewer = useMemo(() => (
-        <object data="/file.pdf" type="application/pdf"></object>
-    ), []);
+    const imageQuery = api.image.getAll.useQuery()
+
+    useEffect(() => {
+        (imageQuery.data && images.length === 0) && dispatch(action({images: imageQuery.data}))
+    }, [imageQuery.data, user]);
+
+    useEffect(() => {
+        const u = localStorage.getItem("user")
+        if (u !== null && u !== "null") {
+            dispatch(action({view: View.TASKS}))
+            window.dispatchEvent(new Event("storage"))
+        }
+    }, []);
+
 
     return (
         <>
             <Head>
-                <title>04_09_24 app</title>
-                <meta name="description" content="I love TRPC"/>
+                <title>{View[view].toString().toLowerCase()}</title>
+                <meta name="description" content="Snek"/>
                 <link rel="icon" href="/favicon.ico"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
                 <style>
@@ -39,9 +54,30 @@ export default function Home() {
                 <style>
                     @import url(&#39;https://fonts.cdnfonts.com/css/sf-pro-display&#39;);
                 </style>
+
+                <style>
+                    @import
+                    url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+                </style>
             </Head>
-            <Navbar setView={setView} setTheme={setTheme} theme={theme} status={status}/>
-            {data && hints ? <Tasks view={view} pdfViewer={pdfViewer} taskData={data.map(x => x as Task)} hintData={hints} setStatus={setStatus}/> : <div></div>}
+            <AnimatedContent key={"main"} type={AnimatedContentType.UP}>
+                {!user &&
+                        <>
+                            <Navbar/>
+                            {(view === View.LOGIN_SIGNUP || view === View.USER_EDIT) &&
+                                <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                                    <UserLoginSignup/>
+                                </AnimatedContent>
+                            }
+                            {view === View.HOME &&
+                                <AnimatedContent key={view.toString()} type={AnimatedContentType.LEFT}>
+                                    <Home/>
+                                </AnimatedContent>
+                            }
+                        </>
+                }
+                {user && <UserAuthWrapper user={user}/>}
+            </AnimatedContent>
         </>
     );
 }

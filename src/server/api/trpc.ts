@@ -47,8 +47,16 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+// export const createTRPCContext = (_opts: CreateNextContextOptions) => {
+//   return createInnerTRPCContext({});
+// };
+
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  return {
+    db,
+    req: opts.req, // ✅ Pass request object
+    res: opts.res, // ✅ Pass response object (optional)
+  };
 };
 
 /**

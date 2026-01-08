@@ -3,6 +3,16 @@ import { env } from "~/env";
 import {appRouter} from "~/server/api/root";
 import { createTRPCContext } from "~/server/api/trpc";
 
+// ✅ Increase body size limit for file uploads
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '100mb',
+        },
+        responseLimit: '100mb',
+    }
+}
+
 // export API handler
 export default createNextApiHandler({
   router: appRouter,

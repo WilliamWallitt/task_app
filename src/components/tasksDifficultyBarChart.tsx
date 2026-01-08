@@ -22,7 +22,6 @@ export const TasksDifficultyBarChart = ({tasks}: TasksDifficultyBarChartProps) =
             }
             return acc;
         }, {} as Record<number, number>)).map(([k, v]) => ({count: k, difficulty: v}))
-        console.log(d)
         return d
     }
 
@@ -33,7 +32,7 @@ export const TasksDifficultyBarChart = ({tasks}: TasksDifficultyBarChartProps) =
                     <CartesianGrid strokeDasharray="3 3"/>
                     <XAxis dataKey={"count"}/>
                     <YAxis dataKey={"difficulty"}/>
-                    <Bar dataKey={"difficulty"} radius={4} fill="var(--text-color)" />
+                    <Bar dataKey={"difficulty"} radius={4} fill="var(--link-color)" />
                     <Legend align={"center"}/>
                 </BarChart>
             </ResponsiveContainer>

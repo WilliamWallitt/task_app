@@ -23,5 +23,23 @@ export const hintBulletRouter = createTRPCRouter({
                     id: input,
                 }
             });
-        })
+        }),
+    deleteAll: publicProcedure.mutation(async ({ctx}) => {
+        await ctx.db.hint_Bullet.deleteMany({});
+    }),
+    update: publicProcedure.input(
+        z.object({
+            id: z.number(),
+            bullet: z.string()
+        }),
+    ).mutation(async ({ctx, input}) => {
+        return ctx.db.hint_Bullet.update({
+            where: {
+                id: input.id
+            },
+            data: {
+                bullet: input.bullet
+            }
+        });
+    })
 });
