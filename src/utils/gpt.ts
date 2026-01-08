@@ -23,7 +23,7 @@ export interface GPTChatError {
 export const GetGPTRequest = (request: GPTRequest, callback: (message: GPTChatMessage) => void) => {
     const init: RequestInit = {
         headers: {
-            'Authorization': 'Bearer sk-svcacct-5DtNLtLMQoc1O_xLey-Ehh-Ljx20ja_n3bSRTusklfEGgvVO9R1LuZnuXRhshSMDK61T3BlbkFJwkDagrJ8rm8yrR8SZkhHLRXfQZPOy7MJq4A5tP9yHfLria6OA1_3tNlFJMOZZ1mIi4gA',
+            'Authorization': 'MOVE TO .env',
             'Content-Type': 'application/json'
         },
         method: 'POST',
